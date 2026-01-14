@@ -1,0 +1,67 @@
+// src/components/RegisterVehicle.jsx
+import React, { useState } from "react";
+
+function RegisterVehicle({ contract }) {
+  const [vin, setVin] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+
+  const handleRegister = async (e) => {
+    e.preventDefault();
+
+    if (!vin.trim()) {
+      setMessage("❌ Please enter a VIN");
+      return;
+    }
+
+    setLoading(true);
+    setMessage("");
+
+    try {
+      // Check if vehicle already exists
+      const owner = await contract.getOwner(vin);
+      if (owner !== "0x0000000000000000000000000000000000000000") {
+        setMessage(`❌ Failed! \n Vehicle already registered by ${owner.slice(0, 6)}...${owner.slice(-4)}`);
+        setLoading(false);
+        return;
+      }
+
+      // Register vehicle
+      const tx = await contract.registerVehicle(vin);
+      setMessage("⏳ Transaction pending...");
+
+      await tx.wait();
+      setMessage("✅ Vehicle registered successfully!");
+      setVin("");
+
+      setTimeout(() => setMessage(""), 5000);
+    } catch (error) {
+      console.error("Error:", error);
+      setMessage("❌ Error: " + (error.reason || error.message));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="card">
+      <h2>📝 Register Vehicle</h2>
+      <form onSubmit={handleRegister}>
+        <input
+          type="text"
+          placeholder="Enter VIN (e.g., 1HGBH41JXMN109186)"
+          value={vin}
+          onChange={(e) => setVin(e.target.value)}
+          disabled={loading}
+          className="input"
+        />
+        <button type="submit" disabled={loading} className="btn-primary">
+          {loading ? "Registering..." : "Register Vehicle"}
+        </button>
+      </form>
+      {message && <div className="message">{message}</div>}
+    </div>
+  );
+}
+
+export default RegisterVehicle;
