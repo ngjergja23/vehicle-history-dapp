@@ -1,5 +1,7 @@
 // src/components/VehicleHistory.jsx
-import React, { useState } from "react";
+import { useState } from "react";
+import { History, ShieldAlert, CheckCircle } from 'lucide-react';
+
 
 function VehicleHistory({ contract }) {
   const [vin, setVin] = useState("");
@@ -49,7 +51,11 @@ function VehicleHistory({ contract }) {
 
   return (
     <div className="card">
-      <h2>📜 View Service History</h2>
+      <div className="card-title">
+        <History size={24} color="#2db8b8" style={{ marginRight: '8px', marginBottom: '20px' }}/>
+        <h2> View Service History</h2>
+      </div>
+      
       <form onSubmit={loadHistory}>
         <input
           type="text"
@@ -70,7 +76,7 @@ function VehicleHistory({ contract }) {
         <>
           <div className="stats">
             <div className="stat">
-              <strong>Total Services:</strong> {history.length}
+              <strong style={{ fontWeight: 100, fontSize: 16}}>Total Services:</strong> {history.length}
             </div>
             <div className="stat">
               <strong>Total Cost:</strong> ${totalCost}

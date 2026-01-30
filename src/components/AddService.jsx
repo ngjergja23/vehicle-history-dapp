@@ -1,5 +1,7 @@
 // src/components/AddService.jsx
-import React, { useState } from "react";
+import { useState } from "react";
+import { Wrench, ShieldAlert, CheckCircle } from 'lucide-react';
+
 
 function AddService({ contract }) {
   const [formData, setFormData] = useState({
@@ -75,7 +77,10 @@ function AddService({ contract }) {
 
   return (
     <div className="card">
-      <h2>🔧 Add Service Record</h2>
+      <div className="card-title">
+        <Wrench size={24} color="#2db8b8" style={{ marginRight: '8px', marginBottom: '20px' }}/>
+        <h2>Add Service Record</h2>
+      </div>
       <form onSubmit={handleSubmit} className="service-form">
         <input
           type="text"

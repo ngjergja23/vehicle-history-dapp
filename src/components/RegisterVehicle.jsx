@@ -1,5 +1,7 @@
 // src/components/RegisterVehicle.jsx
-import React, { useState } from "react";
+import { useState } from "react";
+import { Car, ShieldAlert, CheckCircle } from 'lucide-react';
+
 
 function RegisterVehicle({ contract }) {
   const [vin, setVin] = useState("");
@@ -45,7 +47,11 @@ function RegisterVehicle({ contract }) {
 
   return (
     <div className="card">
-      <h2>📝 Register Vehicle</h2>
+      <div className="card-title">
+        <Car size={24} color="#2db8b8" style={{ marginRight: '8px', marginBottom: '20px' }}/>
+        <h2> Register Vehicle</h2>
+      </div>
+      
       <form onSubmit={handleRegister}>
         <input
           type="text"
