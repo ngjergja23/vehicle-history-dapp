@@ -1,16 +1,49 @@
-# React + Vite
+# VehicleChain 
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**Blockchain-based Vehicle Service Tracking System**
 
-Currently, two official plugins are available:
+VehicleChain is a decentralized application (dApp) built on the Ethereum (Sepolia) testnet. It provides a tamper-proof record of vehicle maintenance and mileage, preventing odometer fraud and ensuring transparency for used car buyers.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+<img width="603" height="605" alt="image" src="https://github.com/user-attachments/assets/6d12efb9-21dd-4c34-ae1d-af1eacdd7e72" />
 
-## React Compiler
+## ✨ Key Features (MVP)
+- **Decentralized Logging:** Service records are stored on the Sepolia Testnet.
+- **Odometer Fraud Prevention:** Smart contract logic rejects any entry where the mileage is lower than the previous record.
+- **Public Verification:** Anyone with a VIN can query the blockchain to see the full service history of a vehicle.
+- **Role-Based Access:** Only authorized mechanic wallets can add new records (simulated for PoC).
 
-The React Compiler is currently not compatible with SWC. See [this issue](https://github.com/vitejs/vite-plugin-react/issues/428) for tracking the progress.
+## 🛠️ Tech Stack
+- **Smart Contract:** Solidity
+- **Blockchain:** Ethereum Sepolia Testnet
+- **Library:** ethers.js, Lucide React (UI)
+- **Frontend:** React.js (Vite)
+- **Wallet:** MetaMask
 
-## Expanding the ESLint configuration
+## 🚀 Getting Started
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+  ### Prerequisites
+  
+  - Node.js installed
+  - MetaMask browser extension
+  - Some Sepolia Test ETH (from a faucet) - e.g. [https://cloud.google.com/application/web3/faucet/ethereum/sepolia](https://cloud.google.com/application/web3/faucet/ethereum/sepolia)
+
+
+  1. **Clone the repo:**
+   ```bash
+   git clone https://github.com/ngjergja23/vehicle-history-dapp
+   cd vehicle-history-dapp
+   ```
+  2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+  3. **Run the app:** (development server)
+   ```bash
+   npm run dev
+   ```
+
+## 🛡️ Future Roadmap
+- **IPFS Integration:** Store high-resolution photos of repair receipts.
+- **NFT Passports:** Mint an ERC-721 token for every vehicle.
+- **IoT Integration:** Connect directly to OBD-II scanners to automate data entry.
+
