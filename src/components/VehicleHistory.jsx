@@ -1,6 +1,6 @@
 // src/components/VehicleHistory.jsx
 import { useState } from "react";
-import { History, ShieldAlert, CheckCircle } from 'lucide-react';
+import { History, ShieldAlert, CheckCircle2, Loader2, Info } from 'lucide-react';
 
 
 function VehicleHistory({ contract }) {
@@ -8,19 +8,22 @@ function VehicleHistory({ contract }) {
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState(""); // "success", "error", ili "pending"
   const [totalCost, setTotalCost] = useState(0);
 
   const loadHistory = async (e) => {
     e.preventDefault();
     setLoading(true);
     setMessage("");
+    setMessageType("");
     setHistory([]);
 
     try {
       // Check if vehicle exists
       const owner = await contract.getOwner(vin);
       if (owner === "0x0000000000000000000000000000000000000000") {
-        setMessage("❌ Vehicle not registered");
+        setMessageType("error");
+        setMessage("Vehicle not found");
         setLoading(false);
         return;
       }
@@ -29,6 +32,7 @@ function VehicleHistory({ contract }) {
       const services = await contract.getVehicleHistory(vin);
 
       if (services.length === 0) {
+        setMessageType("info");
         setMessage("No service history found");
       } else {
         setHistory(services);
@@ -38,8 +42,9 @@ function VehicleHistory({ contract }) {
         setTotalCost(Number(total));
       }
     } catch (error) {
+      setMessageType("error");
       console.error("Error:", error);
-      setMessage("❌ Error: " + (error.reason || error.message));
+      setMessage("Error: " + (error.reason || error.message));
     } finally {
       setLoading(false);
     }
@@ -70,7 +75,15 @@ function VehicleHistory({ contract }) {
         </button>
       </form>
 
-      {message && <div className="message">{message}</div>}
+      {message && (
+        <div className={`message ${messageType}`}>
+          {messageType === "pending" && <Loader2 size={20} className="animate-spin" />}
+          {messageType === "error" && <ShieldAlert size={20} />}
+          {messageType === "success" && <CheckCircle2 size={20} />}  
+          {messageType === "info" && <Info size={20} />} 
+          <span>{message}</span>
+        </div>
+      )}
 
       {history.length > 0 && (
         <>

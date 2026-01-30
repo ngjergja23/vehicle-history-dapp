@@ -1,18 +1,19 @@
-// src/components/RegisterVehicle.jsx
 import { useState } from "react";
-import { Car, ShieldAlert, CheckCircle } from 'lucide-react';
+import { Car, AlertCircle, CheckCircle2, Loader2 } from 'lucide-react';
 
 
 function RegisterVehicle({ contract }) {
   const [vin, setVin] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState(""); // "success", "error", ili "pending"
 
   const handleRegister = async (e) => {
     e.preventDefault();
 
     if (!vin.trim()) {
-      setMessage("❌ Please enter a VIN");
+      setMessage("Please enter a VIN");
+      setMessageType("error");
       return;
     }
 
@@ -23,23 +24,28 @@ function RegisterVehicle({ contract }) {
       // Check if vehicle already exists
       const owner = await contract.getOwner(vin);
       if (owner !== "0x0000000000000000000000000000000000000000") {
-        setMessage(`❌ Failed! \n Vehicle already registered by ${owner.slice(0, 6)}...${owner.slice(-4)}`);
+        setMessageType("error");
+        setMessage(`Failed! \n Vehicle already registered by ${owner.slice(0, 6)}...${owner.slice(-4)}`);
         setLoading(false);
         return;
       }
 
       // Register vehicle
       const tx = await contract.registerVehicle(vin);
-      setMessage("⏳ Transaction pending...");
+      setMessageType("pending");
+      setMessage("Transaction pending...");
 
       await tx.wait();
-      setMessage("✅ Vehicle registered successfully!");
+      setMessageType("success");
+      setMessage("Vehicle registered successfully!");
       setVin("");
 
       setTimeout(() => setMessage(""), 5000);
+
     } catch (error) {
       console.error("Error:", error);
-      setMessage("❌ Error: " + (error.reason || error.message));
+      setMessageType("error");
+      setMessage("Error: " + (error.reason || error.message));
     } finally {
       setLoading(false);
     }
@@ -48,10 +54,10 @@ function RegisterVehicle({ contract }) {
   return (
     <div className="card">
       <div className="card-title">
-        <Car size={24} color="#2db8b8" style={{ marginRight: '8px', marginBottom: '20px' }}/>
+        <Car size={24} color="#2db8b8" style={{ marginRight: '8px', marginBottom: '20px' }} />
         <h2> Register Vehicle</h2>
       </div>
-      
+
       <form onSubmit={handleRegister}>
         <input
           type="text"
@@ -65,7 +71,16 @@ function RegisterVehicle({ contract }) {
           {loading ? "Registering..." : "Register Vehicle"}
         </button>
       </form>
-      {message && <div className="message">{message}</div>}
+
+      {message && (
+        <div className={`message ${messageType}`}>
+          {messageType === "pending" && <Loader2 size={20} className="animate-spin" />}
+          {messageType === "error" && <AlertCircle size={20} />}
+          {messageType === "success" && <CheckCircle2 size={20} />}
+          <span>{message}</span>
+        </div>
+      )}
+
     </div>
   );
 }

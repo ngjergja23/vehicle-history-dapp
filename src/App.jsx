@@ -6,13 +6,15 @@ import { CONTRACT_ADDRESS, CONTRACT_ABI } from "./contracts/VehicleHistory";
 import RegisterVehicle from "./components/RegisterVehicle";
 import AddService from "./components/AddService";
 import VehicleHistory from "./components/VehicleHistory";
-import { Car, Wallet, History, ShieldAlert, CheckCircle } from 'lucide-react';
+import { Car, Wallet, Loader2, ShieldAlert, CheckCircle } from 'lucide-react';
 
 function App() {
   const [account, setAccount] = useState(null);
   const [contract, setContract] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const connectWallet = async () => {
+    setLoading(true);
     try {
       if (!window.ethereum) {
         alert("Please install MetaMask!");
@@ -51,7 +53,10 @@ function App() {
       } else {
         alert("Failed to connect wallet");
       }
+     } finally {
+      setLoading(false);
     }
+
   };
 
   return (
@@ -66,9 +71,10 @@ function App() {
 
       {!account ? (
         <div className="connect-section">
-          <button onClick={connectWallet} className="connect-btn ">
-            <Wallet size={20} className="wallet-icon"/>
-            Connect Wallet
+          <button onClick={connectWallet} className="connect-btn" disabled={loading}>
+            {loading ? <Loader2 className="animate-spin" size={20} /> :
+            <Wallet size={20} className="wallet-icon"/> }
+            <span>{loading ? "Connecting..." : "Connect Wallet"}</span>
           </button>
           <p className="instruction">Connect your MetaMask wallet to get started</p>
         </div>

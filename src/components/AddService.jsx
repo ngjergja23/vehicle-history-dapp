@@ -1,6 +1,6 @@
 // src/components/AddService.jsx
 import { useState } from "react";
-import { Wrench, ShieldAlert, CheckCircle } from 'lucide-react';
+import { Wrench, ShieldAlert, CheckCircle2, Loader2} from 'lucide-react';
 
 
 function AddService({ contract }) {
@@ -15,6 +15,7 @@ function AddService({ contract }) {
   });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState(""); // "success", "error", ili "pending"  
 
   const handleChange = (e) => {
     setFormData({
@@ -27,6 +28,7 @@ function AddService({ contract }) {
     e.preventDefault();
     setLoading(true);
     setMessage("");
+    setMessageType("");
 
     try {
       // Convert date to Unix timestamp
@@ -35,7 +37,8 @@ function AddService({ contract }) {
       // Check mileage validation
       const isValid = await contract.verifyMileage(formData.vin, formData.mileage);
       if (!isValid) {
-        setMessage("❌ Mileage cannot be less than previous service");
+        setMessageType("error");
+        setMessage("Mileage cannot be less than previous service");
         setLoading(false);
         return;
       }
@@ -50,10 +53,12 @@ function AddService({ contract }) {
         formData.location,
         formData.description
       );
+      setMessageType("pending");
+      setMessage("Transaction pending...");
 
-      setMessage("⏳ Transaction pending...");
       await tx.wait();
-      setMessage("✅ Service added successfully!");
+      setMessageType("success");
+      setMessage("Service added successfully!");
 
       // Reset form
       setFormData({
@@ -67,9 +72,11 @@ function AddService({ contract }) {
       });
 
       setTimeout(() => setMessage(""), 5000);
+
     } catch (error) {
       console.error("Error:", error);
-      setMessage("❌ Error: " + (error.reason || error.message));
+      setMessageType("error");
+      setMessage("Error: " + (error.reason || error.message));
     } finally {
       setLoading(false);
     }
@@ -155,7 +162,16 @@ function AddService({ contract }) {
           {loading ? "Adding..." : "Add Service"}
         </button>
       </form>
-      {message && <div className="message">{message}</div>}
+
+      {message && (
+        <div className={`message ${messageType}`}>
+          {messageType === "pending" && <Loader2 size={20} className="animate-spin" />}
+          {messageType === "error" && <ShieldAlert size={20} />}
+          {messageType === "success" && <CheckCircle2 size={20} />}    
+          <span>{message}</span>
+        </div>
+      )}
+      
     </div>
   );
 }
