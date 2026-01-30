@@ -1,4 +1,3 @@
-// src/components/VehicleHistory.jsx
 import { useState } from "react";
 import { History, ShieldAlert, CheckCircle2, Loader2, Info } from 'lucide-react';
 
