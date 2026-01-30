@@ -6,18 +6,26 @@ import { CONTRACT_ADDRESS, CONTRACT_ABI } from "./contracts/VehicleHistory";
 import RegisterVehicle from "./components/RegisterVehicle";
 import AddService from "./components/AddService";
 import VehicleHistory from "./components/VehicleHistory";
-import { Car, Wallet, Loader2, ShieldAlert, CheckCircle } from 'lucide-react';
+import { Car, Wallet, Loader2, CheckCircle, ShieldAlert } from 'lucide-react';
 
 function App() {
   const [account, setAccount] = useState(null);
   const [contract, setContract] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState(""); 
 
   const connectWallet = async () => {
     setLoading(true);
+    setMessageType("pending");
+    setMessage("Initializing connection...");
+
     try {
       if (!window.ethereum) {
-        alert("Please install MetaMask!");
+        // alert("Please install MetaMask!");
+        setMessageType("error");
+        setMessage("Please install MetaMask!");
+        setLoading(false);
         return;
       }
 
@@ -41,6 +49,10 @@ function App() {
       setAccount(accounts[0]);
       setContract(contractInstance);
 
+      setMessageType("success");
+      setMessage("Wallet connected successfully!");
+      setTimeout(() => setMessage(""), 5000);
+
       console.log("✅ Wallet connected:", accounts[0]);
       console.log("✅ Contract loaded:", CONTRACT_ADDRESS);
       console.log("Provider:", provider);
@@ -49,9 +61,11 @@ function App() {
       console.error("Connection error:", error);
       
       if (error.code === 4001) {
-        alert("Connection rejected");
+        setMessageType("error");
+        setMessage("Connection rejected");
       } else {
-        alert("Failed to connect wallet");
+        setMessageType("error");
+        setMessage("Failed to connect wallet. Check MetaMask.");
       }
      } finally {
       setLoading(false);
@@ -72,11 +86,25 @@ function App() {
       {!account ? (
         <div className="connect-section">
           <button onClick={connectWallet} className="connect-btn" disabled={loading}>
-            {loading ? <Loader2 className="animate-spin" size={20} /> :
-            <Wallet size={20} className="wallet-icon"/> }
+            {loading ? (
+              <Loader2 className="animate-spin" size={20} />
+            ) : (
+              <Wallet size={20} className="wallet-icon"/>
+            )}
             <span>{loading ? "Connecting..." : "Connect Wallet"}</span>
           </button>
+
           <p className="instruction">Connect your MetaMask wallet to get started</p>
+
+          {message && (
+            <div className={`message ${messageType}`}>
+              {messageType === "pending" && <Loader2 size={20} className="animate-spin" />}
+              {messageType === "error" && <ShieldAlert size={20} />}
+              {messageType === "success" && <CheckCircle size={20} />}
+              <span>{message}</span>
+            </div>
+          )}
+
         </div>
       ) : (
         <>
@@ -85,7 +113,7 @@ function App() {
               <CheckCircle size={18} color="#2db8b8" style={{ verticalAlign: 'middle', marginRight: '10px', marginBottom: '5px' }} />
               Connected: {account.slice(0, 6)}...{account.slice(-4)}
             </p>
-            <button onClick={() => setAccount(null)} className="disconnect-btn">
+            <button onClick={() => { setAccount(null); setMessage(""); setMessageType(""); }} className="disconnect-btn">
               Disconnect
             </button>
           </div>
